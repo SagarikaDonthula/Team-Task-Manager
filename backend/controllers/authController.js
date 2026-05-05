@@ -17,9 +17,9 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Enforce role policy: Only specific email from secrets (or hardcoded whitelist) can be Admin
+    // Enforce role policy: Only specific emails from secrets (or hardcoded whitelist) can be Admin
     let assignedRole = 'Member';
-    const adminWhitelist = ['donthulasagarika538@gmail.com', process.env.ADMIN_EMAIL];
+    const adminWhitelist = ['donthulasagarika538@gmail.com', 'sagarikadon628@gmail.com', process.env.ADMIN_EMAIL];
     if (role === 'Admin' && adminWhitelist.includes(email)) {
       assignedRole = 'Admin';
     }
@@ -54,8 +54,9 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
-      // Auto-upgrade whitelisted email to Admin if they are currently a Member
-      if (email === 'donthulasagarika538@gmail.com' && user.role !== 'Admin') {
+      // Auto-upgrade whitelisted emails to Admin if they are currently a Member
+      const adminWhitelist = ['donthulasagarika538@gmail.com', 'sagarikadon628@gmail.com'];
+      if (adminWhitelist.includes(email) && user.role !== 'Admin') {
         user.role = 'Admin';
         await user.save();
       }
