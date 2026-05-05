@@ -17,8 +17,11 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    // Default to 'Member' if role is not provided, or 'Admin' if it's the first user (optional logic, keeping it simple for now as requested)
-    const assignedRole = role === 'Admin' ? 'Admin' : 'Member';
+    // Enforce role policy: Only specific email from secrets can be Admin
+    let assignedRole = 'Member';
+    if (role === 'Admin' && email === process.env.ADMIN_EMAIL) {
+      assignedRole = 'Admin';
+    }
 
     const user = await User.create({
       name,
